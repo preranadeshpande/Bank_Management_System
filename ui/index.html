@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Bank System</title>
+    <script src="libs/jquery.js"></script>
+    <link rel="stylesheet" href="libs/bootstrap.min.css">
+    <script src="libs/popper.min.js" i></script>
+    <script src="libs/bootstrap.min.js"></script>
+    <style>
+        body {
+            padding: 20px;
+        }
+
+        #searchCustomer {
+            /* margin-top: 20px; */
+        }
+
+        .margin-top-bottom {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .padding {
+            padding: 20px;
+        }
+
+        .text-align-right {
+            text-align: right;
+        }
+
+        #customerInfo {
+            margin-top: 20px;
+        }
+
+        #logo {
+            height: 50px;
+            float: right;
+            text-align: right;
+            padding: 5px;
+        }
+
+        #top-bar {
+            background: rgb(231, 229, 229);
+            margin: -20px;
+            margin-bottom: 20px;
+        }
+
+        #top-bar .title {
+            padding-left: 15px;
+            padding-top: 10px;
+            color: rgb(73, 136, 160);
+            font-weight: bold;
+            text-shadow: 2px 2px 2px white;
+        }
+
+        #customerListBody tr {
+            cursor: pointer;
+        }
+
+        #customerList {
+            margin-top: 20px !important;
+        }
+
+        #customerList thead {
+            background: rgb(161, 197, 225);
+        }
+
+        #login>div {
+            background: rgb(244, 244, 244);
+            padding: 30px;
+            border-radius: 10px;
+            padding-top: 40px;
+            padding-bottom: 50px;
+            margin-top: 100px;
+            box-shadow: 4px 4px 4px silver;
+        }
+
+        #login input {
+            margin: 20px 0px;
+        }
+
+        #customerPage {
+            display: none;
+        }
+
+        #addAccount {
+            z-index: 1200;
+        }
+
+        #addTransactionDialog {
+            z-index: 1200;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="row" id="top-bar">
+        <div class="col-8">
+            <h3 class="title">GreenLeaf Bank</h3>
+        </div>
+        <div class="col-4">
+            <img id="logo" src="res/bank.png" />
+        </div>
+    </div>
+
+    <div class="row" id="login">
+        <div class="col-4 offset-4">
+            <input type="email" id="email" class="form-control" placeholder="Email" />
+            <input type="password" id="password" class="form-control" placeholder="Password" />
+            <button class="btn btn-block btn-success" id="login-button"> Login </button>
+
+            <br />
+            <div style="display: none;" class="alert alert-danger" id="login-error">
+                Invalid Email or Password
+            </div>
+        </div>
+    </div>
+
+    <div class="row" id="customerPage">
+        <div class="offset-3 col-6">
+            <input class="form-control" placeholder="Search for Customer" type="text" id="searchParam"
+                autocomplete="off" />
+        </div>
+        <div class="offset-3 col-6 text-align-right padding">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCustomer">
+                Add Customer
+            </button>
+            <button id="searchCustomer" class="btn btn-success"> Search </button>
+        </div>
+
+        <!-- <div class="col-12" id="customerInfo"> -->
+        <div class="col-12">
+            <table id="customerList" class="table table-condensed table-hover">
+                <thead>
+                    <tr>
+                        <td>Customer Id</td>
+                        <td>Customer Name</td>
+                        <td>Customer Phone</td>
+                        <td>Customer Email</td>
+                        <td>Customer Status</td>
+                    </tr>
+                </thead>
+                <tbody id="customerListBody">
+
+                </tbody>
+            </table>
+        </div>
+        <!-- </div> -->
+    </div>
+
+
+
+    <!-- Add Customer Modal -->
+    <div class="modal fade" id="addCustomer" tabindex="-1" role="dialog" aria-labelledby="addCustomerModal"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addCustomerModal">Add Customer</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input class="form-control margin-top-bottom" name="customer_name" type="text"
+                        placeholder="Customer Name" />
+                    <input class="form-control margin-top-bottom" name="customer_address" type="text"
+                        placeholder="Address" />
+                    <input class="form-control margin-top-bottom" name="customer_phone" type="phone"
+                        placeholder="Phone" />
+                    <input class="form-control margin-top-bottom" name="customer_email" type="email"
+                        placeholder="Email" />
+                    <input type="radio" name="customer_gender" value="Male" /> Male
+                    <input type="radio" name="customer_gender" value="Female" /> Female
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveCustomer">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Add Account Modal -->
+    <div class="modal fade" id="addAccount" tabindex="-1" role="dialog" aria-labelledby="addAccountModal"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addAccountModal">Add Account</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row margin-top-bottom">
+                        <div class="col-3">Account Type</div>
+                        <div class="col-9">
+                            <select name="account_type" class="form-control">
+                                <option value="Saving Account">Saving Account</option>
+                                <option value="Current Account">Current Account</option>
+                                <option value="Fixed Deposit Account">Fixed Deposit Account</option>
+                                <option value="Recurring Deposit Account">Recurring Deposit Account</option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="row margin-top-bottom">
+                        <div class="col-3">Branch</div>
+                        <div class="col-9">
+                            <select name="select_branch" class="form-control">
+
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="row margin-top-bottom">
+                        <div class="col-3">Interest Rate</div>
+                        <div class="col-9">
+                            <input type="number" name="interest_rate" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveAccount">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <!-- Add Transaction Modal -->
+    <div class="modal fade" id="addTransactionDialog" tabindex="-1" role="dialog" aria-labelledby="addTransactionModal"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addTransactionModal">Add Transaction</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row margin-top-bottom">
+
+                        <div class="col-3">
+                            Amount
+                        </div>
+                        <div class="col-9">
+                            <input class='form-control' name="transaction_amount" type='number' placeholder="Amount" />
+                        </div>
+                    </div>
+                    <div class="row margin-top-bottom">
+                        <div class="col-3">
+                            Info
+                        </div>
+                        <div class="col-9">
+                            <input class='form-control' name="transaction_info" type="text"
+                                placeholder="Transaction Info" />
+                        </div>
+                    </div>
+                    <div class="row margin-top-bottom">
+                        <div class="col-3">Transaction Type</div>
+                        <div class="col-9">
+                            <select name="transaction_type" class="form-control">
+                                <option value="Debit">Debit</option>
+                                <option value="Credit">Credit</option>
+                            </select>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="saveTransaction">Save</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Customer Info Modal -->
+    <div class="modal fade" id="customerInfo" tabindex="-1" role="dialog" aria-labelledby="customerInfo"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="customerInfoModal">Customer Info <button class="btn btn-sm btn-danger"
+                            style="margin-left: 15px" id="showHideInfo"> Hide Info </button></h5>
+                    <span style="display: none;" id="active_customer_id" data-customer-id=""></span>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="customerInfoDetailed">
+                    <span id="customerInfoSection">
+                        <span id="nonEditCustomerInfo">
+                            <div class="row">
+                                <table class="table table-bordered table-striped col-10 offset-1">
+                                    <tbody>
+                                        <tr>
+                                            <td>Customer ID: </td>
+                                            <td id="customerInfoDetailed-id"> </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Name: </td>
+                                            <td id="customerInfoDetailed-name"> </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>Address: </td>
+                                            <td id="customerInfoDetailed-address"> </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>Phone: </td>
+                                            <td id="customerInfoDetailed-phone"> </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>Email: </td>
+                                            <td id="customerInfoDetailed-email"> </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td>Gender: </td>
+                                            <td id="customerInfoDetailed-gender"> </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Status: </td>
+                                            <td id="customerInfoDetailed-status"> </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 text-center">
+                                    <button class="btn btn-sm btn-warning margin-top-bottom" id="editCustomerButton">Edit
+                                        Customer</button>
+                                </div>
+                            </div>
+
+                        </span>
+
+                        <span id="editCustomerInfo" style="display: none;">
+                            <div class="row">
+                                <table class="table table-bordered table-striped col-10 offset-1">
+                                    <tbody>
+                                        <tr>
+                                            <td>Name:</td>
+                                            <td><input class="form-control" name="customerInfoDetailed-name" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Address:</td>
+                                            <td><input class="form-control" name="customerInfoDetailed-address" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Phone:</td>
+                                            <td><input class="form-control" name="customerInfoDetailed-phone" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Email:</td>
+                                            <td><input class="form-control" name="customerInfoDetailed-email" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Gender:</td>
+                                            <td>
+                                                <select class="form-control" name="customerInfoDetailed-gender">
+                                                    <option value="Male">Male</option>
+                                                    <option value="Female">Female</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>Status:</td>
+                                            <td>
+                                                <select class="form-control" name="customerInfoDetailed-status">
+                                                    <option value="1">Active</option>
+                                                    <option value="0">Inactive</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                                <div class="col-12 text-center">
+                                    <button class="btn btn-secondary btn-sm" id="updateCustomerCancel">Cancel</button>
+                                    <button class="btn btn-success btn-sm" id="updateCustomerSave">Update</button>
+                                </div>
+                            </div>
+
+                        </span>
+                    </span>
+
+
+
+                    <span id="accountsSpan" style="display: none;">
+
+                        <!-- <div style="text-align: right;"> -->
+
+                        <!-- </div> -->
+
+                        <div id="accountList">
+                            <h5>Accounts <button id="addAccountBtn" class="btn btn-primary btn-sm" data-toggle="modal"
+                                    data-target="#addAccount" style="margin-left: 15px;">Add
+                                    Account</button> </h5>
+                            <table class='table table-bordered table-hover table-striped'>
+                                <thead>
+                                    <tr>
+                                        <td>Account No</td>
+                                        <td>Account Type</td>
+                                        <td>Branch</td>
+                                        <td>Balance</td>
+                                        <td>Interest</td>
+                                        <td>Status</td>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="accountListBody">
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div id="accountMoreInfo" style="display: none;">
+                            <button class="btn btn-sm btn-success margin-top-bottom" id="showAccounts">Back</button>
+                            <button style="margin-left: 15px;"
+                                class="btn btn-sm btn-warning margin-top-bottom float-right" id="editAccountInfo"> Edit
+                                Account
+                            </button>
+                            <button style="margin-left: 15px; display: none;"
+                                class="btn btn-sm btn-primary margin-top-bottom float-right" id="addTransactionBtn"
+                                data-target="#addTransactionDialog" data-toggle="modal"> Add Transaction
+                            </button>
+                            <br />
+
+                            <div id="accountMoreInfo-info">
+
+                            </div>
+
+                            <div id="accountMoreInfo-info-edit" style="display: none;">
+                                <table class="table table-bordered table-striped">
+                                    <tbody>
+                                        <tr>
+                                            <td><b>Branch:</b></td>
+                                            <td>
+                                                <select name="accountMoreInfo-info-edit-select_branch" class="form-control">
+
+                                                </select>
+                                            </td>
+                                            <td><b>Account Type:</b></td>
+                                            <td>
+                                                <select name="accountMoreInfo-info-edit-account_type" class="form-control">
+                                                    <option value="Saving Account">Saving Account</option>
+                                                    <option value="Current Account">Current Account</option>
+                                                    <option value="Fixed Deposit Account">Fixed Deposit Account</option>
+                                                    <option value="Recurring Deposit Account">Recurring Deposit Account
+                                                    </option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td><b>Interest Rate:</b></td>
+                                            <td><input type="number" class="form-control" name="accountMoreInfo-info-edit-interest" /></td>
+                                            <td><b>Status:</b></td>
+                                            <td>
+                                                <select class="form-control" name="accountMoreInfo-info-edit-status">
+                                                    <option value="1">Active</option>
+                                                    <option value="0">Inactive</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <div class="col-12 text-center">
+                                    <button class="btn btn-secondary btn-sm margin-top-bottom" id="updateAccountCancel">Cancel</button>
+                                    <button class="btn btn-success btn-sm margin-top-bottom" id="updateAccountSave">Update</button>
+                                </div>    
+                            </div>
+                            <table id="accountMoreInfo-transactions-table" class="table table-bordered table-striped">
+                                <thead>
+                                    <tr>
+                                        <td>Transaction Id</td>
+                                        <td>Transaction Date</td>
+                                        <td>Transaction Info</td>
+                                        <td>Transaction Type</td>
+                                        <td>Amount</td>
+                                        <td>Balance</td>
+                                    </tr>
+                                </thead>
+                                <tbody id="accountMoreInfo-transactions">
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </span>
+
+
+                </div>
+                <!-- <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div> -->
+            </div>
+        </div>
+    </div>
+</body>
+
+<script src="script.js"></script>
+
+</html>
